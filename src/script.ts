@@ -2,7 +2,7 @@
 
 import {CommandModule, scriptName} from 'yargs';
 
-const yarg = scriptName('igc')
+const yarg = scriptName('igc-web')
   .usage('IBM Garage Cloud Native Toolkit CLI (https://cloudnativetoolkit.dev)')
   .usage('')
   .usage('Usage: $0 <command> [args]')
