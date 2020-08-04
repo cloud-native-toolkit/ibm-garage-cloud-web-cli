@@ -2,9 +2,14 @@ import {Container, Inject} from 'typescript-ioc';
 
 import {JenkinsAuth} from './config-jenkins-auth.api';
 import {JenkinsAuthOptions} from './config-jenkins-auth-options.model';
-import {GenerateToken, GenerateTokenOptions} from '../generate-token';
-import {KubeIngress, KubeSecret, KubeBackend} from '../../api/kubectl';
-import {DefaultBackend, InClusterBackend} from '../../api/kubectl/client.backend';
+import {GenerateToken, GenerateTokenOptions} from '../generate-jenkins-token';
+import {KubeSecret} from '@ibmgaragecloud/cloud-native-toolkit-cli/dist/api/kubectl/secrets';
+import {KubeIngress} from '@ibmgaragecloud/cloud-native-toolkit-cli/dist/api/kubectl/ingress';
+import {
+  DefaultBackend,
+  InClusterBackend,
+  KubeBackend
+} from '@ibmgaragecloud/cloud-native-toolkit-cli/dist/api/kubectl/client';
 
 interface JenkinsSecret {
   'jenkins-admin-password': string;
