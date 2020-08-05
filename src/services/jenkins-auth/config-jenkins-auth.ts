@@ -7,9 +7,9 @@ import {KubeSecret} from '@ibmgaragecloud/cloud-native-toolkit-cli/dist/api/kube
 import {KubeIngress} from '@ibmgaragecloud/cloud-native-toolkit-cli/dist/api/kubectl/ingress';
 import {
   DefaultBackend,
-  InClusterBackend,
-  KubeBackend
-} from '@ibmgaragecloud/cloud-native-toolkit-cli/dist/api/kubectl/client';
+  InClusterBackend
+} from '@ibmgaragecloud/cloud-native-toolkit-cli/dist/api/kubectl/client.backend';
+import {KubeBackend} from '@ibmgaragecloud/cloud-native-toolkit-cli/dist/api/kubectl/client.api';
 
 interface JenkinsSecret {
   'jenkins-admin-password': string;
