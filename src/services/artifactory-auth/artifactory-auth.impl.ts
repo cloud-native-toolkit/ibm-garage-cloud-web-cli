@@ -47,12 +47,12 @@ export class ArtifactoryAuthImpl implements ArtifactoryAuth {
       }
     });
 
-    this.logger.log('Updated Artifactory credentials: ', credentials);
-
     if (credentials.newPassword) {
-      this.logger.log('Updating Artifactory credentials: ', credentials);
+      this.logger.log('Updating Artifactory credentials');
 
       await this.updateArtifactoryCredentials(namespace, credentials);
+    } else {
+      this.logger.log('No credentials to update');
     }
   }
 
