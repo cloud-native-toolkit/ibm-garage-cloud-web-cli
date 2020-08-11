@@ -52,7 +52,7 @@ export class ArtifactoryAuthImpl implements ArtifactoryAuth {
 
       await this.updateArtifactoryCredentials(namespace, credentials);
     } else {
-      this.logger.log('No credentials to update');
+      this.logger.log('No credentials to update', credentials);
     }
   }
 

@@ -8,3 +8,5 @@ coverage/
 test-report.xml
 .npmrc
 .vscode/
+screenshots/
+
