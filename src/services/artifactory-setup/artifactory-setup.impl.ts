@@ -68,10 +68,15 @@ export class SetupArtifactoryImpl {
 
     await timer(2000);
 
+    await this.loggingApi.snapshot(page, 'login-before');
+
     await page.focus('input[name=username]');
     await page.keyboard.type(username);
     await page.focus('input[name=password]');
     await page.keyboard.type(password);
+
+    await this.loggingApi.snapshot(page, 'login-after');
+
     await page.click('button[type=submit]')
 
     return page;
@@ -99,9 +104,12 @@ export class SetupArtifactoryImpl {
 
     this.loggingApi.log(`Getting started`);
 
+    await this.loggingApi.snapshot(page, 'getting-started-before');
     await page.click('button.get-started');
 
     await timer(1000);
+
+    await this.loggingApi.snapshot(page, 'getting-started-after');
   }
 
   async resetAdminPassword(page: Page): Promise<string> {
@@ -115,10 +123,14 @@ export class SetupArtifactoryImpl {
       symbols: true
     });
 
+    await this.loggingApi.snapshot(page, 'reset-password-before');
     await page.focus('input[type=password]');
+
     await page.keyboard.type(newPassword);
     await page.keyboard.press('Tab');
     await page.keyboard.type(newPassword);
+
+    await this.loggingApi.snapshot(page, 'reset-password-after');
 
     await page.click('button.el-button--primary');
 
@@ -131,36 +143,49 @@ export class SetupArtifactoryImpl {
 
     this.loggingApi.log(`Set base url`);
 
-    await page.focus('input');
+    await this.loggingApi.snapshot(page, 'set-base-url-before');
+
+    await page.focus('.base-url-wrapper input');
     await page.keyboard.type(url);
 
-    await page.click('button.el-button--primary');
+    await this.loggingApi.snapshot(page, 'set-base-url-mid');
+    await page.click('.el-footer button.el-button--primary');
 
     await timer(1000);
+
+    await this.loggingApi.snapshot(page, 'set-base-url-after');
   }
 
   async skipConfigureProxy(page: Page) {
 
     this.loggingApi.log(`Skip configure proxy`);
 
+    await this.loggingApi.snapshot(page, 'configure-proxy-before');
     await page.evaluateHandle(() => {
       const skipButtonIndex  = 1;
       document.querySelectorAll<HTMLInputElement>('button.el-button--secondary')
         .item(skipButtonIndex)
         .click();
     });
+
+    await this.loggingApi.snapshot(page, 'configure-proxy-after');
   }
 
   async createRepositories(page: Page) {
 
     this.loggingApi.log(`Create repositories`);
 
+    await this.loggingApi.snapshot(page, 'create-repositories-before');
     await page.evaluateHandle(() => {
       document.querySelectorAll<HTMLInputElement>('input[type=checkbox]')
         .forEach(e => e.click());
     });
 
+    await this.loggingApi.snapshot(page, 'create-repositories-mid');
+
     await page.click('button.el-button--primary');
+
+    await this.loggingApi.snapshot(page, 'create-repositories-after');
 
     await timer(1000);
   }
@@ -169,10 +194,13 @@ export class SetupArtifactoryImpl {
 
     this.loggingApi.log(`Complete wizard`);
 
+    await this.loggingApi.snapshot(page, 'complete-wizard-before');
+
     await page.click('button.el-button--primary');
 
     await timer(1000);
 
+    await this.loggingApi.snapshot(page, 'complete-wizard-after');
   }
 
   async allowAnonymousAccess(page: Page, url: string) {
@@ -182,16 +210,23 @@ export class SetupArtifactoryImpl {
 
     await page.goto(securityConfigUrl);
 
-    await timer(1000);
+    await timer(1500);
+
+    await this.loggingApi.snapshot(page, 'allow-anonymous-access-before');
 
     await page.evaluateHandle(() => {
       document.querySelectorAll<HTMLInputElement>('input[type=checkbox]')
         .item(0)
         .click();
-      document.querySelectorAll<HTMLInputElement>('button.el-button--primary')
-        .item(1)
-        .click();
     });
+
+    await timer(500);
+
+    await this.loggingApi.snapshot(page, 'allow-anonymous-access-mid');
+
+    await page.click('.main-card-content-footer button.el-button--primary');
+
+    await this.loggingApi.snapshot(page, 'allow-anonymous-access-after');
   }
 
   private async getEncryptedPassword(page: Page, url: string, password: string): Promise<{encryptedPassword: string}> {
@@ -203,9 +238,10 @@ export class SetupArtifactoryImpl {
 
     await timer(2000);
 
+    await this.loggingApi.snapshot(page, 'retrieve-encrypted-password-login-before');
     await page.focus('input[name=password]');
-    await page.keyboard.type(password);
 
+    await page.keyboard.type(password);
     // log in to page
     await page.evaluateHandle(() => {
       document.querySelectorAll<HTMLInputElement>('button.btn-primary')
@@ -213,11 +249,15 @@ export class SetupArtifactoryImpl {
         .click();
     });
 
+    await this.loggingApi.snapshot(page, 'retrieve-encrypted-password-login-after');
+
     await timer(500);
 
+    // show encrypted password
     await page.click('i.jf-reveal-input');
 
-    // show encrypted password
+    await this.loggingApi.snapshot(page, 'retrieve-encrypted-password-show-password');
+
     const handle: JSHandle = await page.evaluateHandle(() => {
       return document.querySelector<HTMLInputElement>('input[name=password]').value;
     });
