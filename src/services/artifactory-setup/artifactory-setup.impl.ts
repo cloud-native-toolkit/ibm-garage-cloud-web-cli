@@ -10,7 +10,7 @@ export class SetupArtifactoryImpl {
   @Inject
   loggingApi: LoggingApi;
 
-  async setupArtifactory({url, username, password}: {url: string, username: string, password: string}): Promise<ArtifactorySetupResult> {
+  async setupArtifactory({url, publicUrl, username, password}: {url: string, publicUrl: string, username: string, password: string}): Promise<ArtifactorySetupResult> {
 
     const browser: Browser = await this.buildDriver();
 
@@ -21,11 +21,11 @@ export class SetupArtifactoryImpl {
       await timer(1000);
 
       const handle: JSHandle = await page.evaluateHandle(() => {
-        return document.querySelector<HTMLInputElement>('.welcome-content .primary-message').innerHTML;
+        return document.querySelector<HTMLInputElement>('.welcome-content .primary-message').innerText;
       });
       this.loggingApi.log('Current page: ', ((await handle.jsonValue()) as any).trim());
 
-      const {newPassword} = await this.completeWelcomeWizard(page, url);
+      const {newPassword} = await this.completeWelcomeWizard(page, publicUrl);
       result.newPassword = newPassword;
 
       await this.allowAnonymousAccess(page, url);
@@ -249,8 +249,14 @@ export class SetupArtifactoryImpl {
   }
 
   async allowAnonymousAccess(page: Page, url: string) {
-    const securityConfigUrl = `${url}/ui/admin/configuration/security/general`;
 
+    const handle: JSHandle = await page.evaluateHandle(() => {
+      return document.querySelector<HTMLElement>('.main-card .title-wrapper').innerText;
+    });
+
+    this.loggingApi.log('On page: ' + await handle.jsonValue());
+
+    const securityConfigUrl = `${url}/ui/admin/configuration/security/general`;
     this.loggingApi.log(`Setting 'Allow anonymous access': ${securityConfigUrl}`);
 
     await page.goto(securityConfigUrl);

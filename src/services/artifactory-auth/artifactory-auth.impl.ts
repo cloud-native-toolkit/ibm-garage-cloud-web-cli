@@ -35,7 +35,7 @@ export class ArtifactoryAuthImpl implements ArtifactoryAuth {
 
     this.configureKubernetesBackend(inCluster);
 
-    const config: {url: string, username: string, password} = await this.getArtifactoryUrlAndCredentials(namespace, inCluster);
+    const config: {url: string, publicUrl: string, username: string, password: string} = await this.getArtifactoryUrlAndCredentials(namespace, inCluster);
 
     this.logger.log('Retrieved Artifactory config: ', Object.assign({}, config, {password: !!config.password ? 'xxxx' : ''}));
 
@@ -64,20 +64,20 @@ export class ArtifactoryAuthImpl implements ArtifactoryAuth {
     }
   }
 
-  async getArtifactoryUrlAndCredentials(namespace: string, inCluster: boolean): Promise<{url: string, username: string, password: string}> {
+  async getArtifactoryUrlAndCredentials(namespace: string, inCluster: boolean): Promise<{url: string, publicUrl: string, username: string, password: string}> {
     const result: {url: string, username: string, password: string} = await this.kubeSecret
       .getData<ArtifactorySecretData>('artifactory-access', namespace)
       .then(d => ({url: d.ARTIFACTORY_URL, username: d.ARTIFACTORY_USER, password: d.ARTIFACTORY_PASSWORD}));
-
-    if (inCluster && result.url) {
-      return result;
-    }
 
     const publicUrl = await this.kubeConfigMap
       .getData<{ARTIFACTORY_URL: string}>('artifactory-config', namespace)
       .then(d => d.ARTIFACTORY_URL);
 
-    return Object.assign({}, result, {url: publicUrl});
+    if (inCluster && result.url) {
+      return Object.assign({}, result, {publicUrl});
+    }
+
+    return Object.assign({}, result, {url: publicUrl, publicUrl});
   }
 
   async updateArtifactoryCredentials(namespace: string, credentials: ArtifactorySetupResult) {
