@@ -73,10 +73,6 @@ export class ArtifactoryAuthImpl implements ArtifactoryAuth {
       .getData<{ARTIFACTORY_URL: string}>('artifactory-config', namespace)
       .then(d => d.ARTIFACTORY_URL);
 
-    if (inCluster && result.url) {
-      return Object.assign({}, result, {publicUrl});
-    }
-
     return Object.assign({}, result, {url: publicUrl, publicUrl});
   }
 
