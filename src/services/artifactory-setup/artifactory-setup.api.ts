@@ -20,5 +20,5 @@ export class ArtifactorySetupError extends Error {
 }
 
 export abstract class SetupArtifactory {
-  abstract async setupArtifactory({url, username, password}: {url: string, username: string, password: string}): Promise<ArtifactorySetupResult>;
+  abstract async setupArtifactory({url, publicUrl, username, password}: {url: string, publicUrl: string, username: string, password: string}): Promise<ArtifactorySetupResult>;
 }
