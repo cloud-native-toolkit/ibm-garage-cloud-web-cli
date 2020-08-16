@@ -250,12 +250,6 @@ export class SetupArtifactoryImpl {
 
   async allowAnonymousAccess(page: Page, url: string) {
 
-    const handle: JSHandle = await page.evaluateHandle(() => {
-      return document.querySelector<HTMLElement>('.main-card .title-wrapper').innerText;
-    });
-
-    this.loggingApi.log('On page: ' + await handle.jsonValue());
-
     const securityConfigUrl = `${url}/ui/admin/configuration/security/general`;
     this.loggingApi.log(`Setting 'Allow anonymous access': ${securityConfigUrl}`);
 
