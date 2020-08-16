@@ -40,6 +40,8 @@ export class ArtifactoryAuthImpl implements ArtifactoryAuth {
     this.logger.log('Retrieved Artifactory config: ', Object.assign({}, config, {password: !!config.password ? 'xxxx' : ''}));
 
     const credentials: ArtifactorySetupResult = await this.artifactory.setupArtifactory(config).catch(err => {
+      this.logger.debug('Error setting up Artifactory: ', err);
+
       if (err instanceof ArtifactorySetupError) {
         return err.result;
       } else {
