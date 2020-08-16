@@ -102,6 +102,11 @@ export class SetupArtifactoryImpl {
 
   async clickGetStarted(page: Page) {
 
+    const handle: JSHandle = await page.evaluateHandle(() => {
+      return document.querySelector<HTMLInputElement>('.primary-message').innerText;
+    });
+    this.loggingApi.log('On page: ' + (await handle.jsonValue()) as string)
+
     this.loggingApi.log(`Getting started`);
 
     await this.loggingApi.snapshot(page, 'getting-started-before');
@@ -114,7 +119,15 @@ export class SetupArtifactoryImpl {
 
   async resetAdminPassword(page: Page): Promise<string> {
 
-    this.loggingApi.log(`Reset admin password`);
+    await timer(1000);
+
+    const handle: JSHandle = await page.evaluateHandle(() => {
+      return document.querySelector<HTMLElement>('.step-wrapper .title').innerText;
+    });
+
+    this.loggingApi.log('On page: ' + await handle.jsonValue());
+
+    this.loggingApi.log(`Resetting admin password`);
 
     const newPassword = generator.generate({
       length: 20,
@@ -141,7 +154,15 @@ export class SetupArtifactoryImpl {
 
   async setBaseUrl(page: Page, url: string) {
 
-    this.loggingApi.log(`Set base url`);
+    await timer(1000);
+
+    const handle: JSHandle = await page.evaluateHandle(() => {
+      return document.querySelector<HTMLElement>('.step-wrapper .title').innerText;
+    });
+
+    this.loggingApi.log('On page: ' + await handle.jsonValue());
+
+    this.loggingApi.log(`Setting base url: ` + url);
 
     await this.loggingApi.snapshot(page, 'set-base-url-before');
 
@@ -158,6 +179,14 @@ export class SetupArtifactoryImpl {
 
   async skipConfigureProxy(page: Page) {
 
+    await timer(1000);
+
+    const handle: JSHandle = await page.evaluateHandle(() => {
+      return document.querySelector<HTMLElement>('.step-wrapper .title').innerText;
+    });
+
+    this.loggingApi.log('On page: ' + await handle.jsonValue());
+
     this.loggingApi.log(`Skip configure proxy`);
 
     await this.loggingApi.snapshot(page, 'configure-proxy-before');
@@ -172,6 +201,14 @@ export class SetupArtifactoryImpl {
   }
 
   async createRepositories(page: Page) {
+
+    await timer(1000);
+
+    const handle: JSHandle = await page.evaluateHandle(() => {
+      return document.querySelector<HTMLElement>('.step-wrapper .title').innerText;
+    });
+
+    this.loggingApi.log('On page: ' + await handle.jsonValue());
 
     this.loggingApi.log(`Create repositories`);
 
@@ -191,6 +228,14 @@ export class SetupArtifactoryImpl {
   }
 
   async completeWizard(page: Page) {
+
+    await timer(1000);
+
+    const handle: JSHandle = await page.evaluateHandle(() => {
+      return document.querySelector<HTMLElement>('.step-wrapper .title').innerText;
+    });
+
+    this.loggingApi.log('On page: ' + await handle.jsonValue());
 
     this.loggingApi.log(`Complete wizard`);
 
