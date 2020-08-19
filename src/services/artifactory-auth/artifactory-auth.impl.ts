@@ -1,18 +1,10 @@
-import {Container, Inject} from 'typescript-ioc';
-import {
-  KubeConfigMap,
-  KubeSecret,
-  Secret
-} from '@ibmgaragecloud/cloud-native-toolkit-cli/dist/api/kubectl';
-import {KubeBackend} from '@ibmgaragecloud/cloud-native-toolkit-cli/dist/api/kubectl/client.api';
+import {Inject} from 'typescript-ioc';
+import {KubeConfigMap, KubeSecret, Secret} from '@ibmgaragecloud/cloud-native-toolkit-cli/dist/api/kubectl';
 
 import {ArtifactoryAuth, ArtifactoryAuthOptions} from './artifactory-auth.api';
 import {ArtifactorySetupError, ArtifactorySetupResult, SetupArtifactory} from '../artifactory-setup';
-import {
-  DefaultBackend,
-  InClusterBackend,
-} from '@ibmgaragecloud/cloud-native-toolkit-cli/dist/api/kubectl/client.backend';
 import {LoggingApi} from '../../logging';
+import {configureKubernetesBackend} from '../../util/configure-kubernetes-backend';
 
 interface ArtifactorySecretData {
   ARTIFACTORY_URL?: string;
@@ -33,7 +25,7 @@ export class ArtifactoryAuthImpl implements ArtifactoryAuth {
 
   async setupArtifactoryAuth({namespace = 'tools', inCluster = false}: ArtifactoryAuthOptions): Promise<void> {
 
-    this.configureKubernetesBackend(inCluster);
+    configureKubernetesBackend(inCluster);
 
     const config: {url: string, publicUrl: string, username: string, password: string} = await this.getArtifactoryUrlAndCredentials(namespace, inCluster);
 
@@ -55,14 +47,6 @@ export class ArtifactoryAuthImpl implements ArtifactoryAuth {
       await this.updateArtifactoryCredentials(namespace, credentials);
     } else {
       this.logger.log('No credentials to update', credentials);
-    }
-  }
-
-  configureKubernetesBackend(inCluster: boolean) {
-    if (inCluster) {
-      Container.bind(KubeBackend).to(InClusterBackend);
-    } else {
-      Container.bind(KubeBackend).to(DefaultBackend);
     }
   }
 
