@@ -76,6 +76,40 @@ internal url to connect to the Artifactory instance
 igc-web setup-artifactory -n tools
 ```
 
+### setup-sonarqube
+
+The SonarQube helm package does not expose a mechanism to provide a password during the install process. As such, every
+new instance of SonarQube has the username and password set to `admin`/`admin`. In order to change the password, one must
+log into the console and change it via the UI. Additionally, an API token can be used when interacting with SonarQube that
+provides added security by not exposing the user password. The only way to generate the token is via the UI.
+
+There are two actions that need to be performed to set up SonarQube:
+
+- Change the password to a more complex one
+- Generate an authentication token
+
+This command will read the SonarQube configuration information from the 
+`sonarqube-access` secret, log in to the SonarQube UI using puppeteer and
+reset the password, then update the `sonarqube-access` secret with the results of the automation.
+
+#### Pre-requisites
+
+The command assumes that the target cluster has already been configured or that the command is
+running in a pod in the cluster and the `--inCluster` argument has been passed
+
+#### Options
+
+- `-n` - the namespace where SonarQube has been installed. If not provided defaults to `tools`
+- `--inCluster` - a flag indicating that the command is running within a pod in the cluster. If 
+the flag is set, the command will retrieve the kube config from the cluster and will use the
+internal url to connect to the SonarQube instance
+
+#### Example usage
+
+```shell script
+igc-web setup-sonarqube -n tools
+```
+
 ## Development
 
 ### Run the tests
