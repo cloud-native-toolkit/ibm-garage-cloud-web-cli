@@ -1,9 +1,10 @@
 import {SetupSonarqube, SonarqubeSetupError, SonarqubeSetupResult} from './sonarqube-setup.api';
 import {Inject} from 'typescript-ioc';
 import {LoggingApi} from '../../logging';
-import {Browser, launch, Page} from 'puppeteer';
+import {Browser, JSHandle, launch, Page} from 'puppeteer';
 import {timer} from '@ibmgaragecloud/cloud-native-toolkit-cli/dist/util/timer';
 import * as generator from 'generate-password';
+import {maskValue} from '../../util/mask-value';
 
 export class SonarqubeSetupImpl implements SetupSonarqube {
   @Inject
@@ -19,9 +20,10 @@ export class SonarqubeSetupImpl implements SetupSonarqube {
 
       await timer(1000);
 
+      const {token} = await this.generateToken(page, url);
       const {newPassword} = await this.updatePassword(page, url, password);
 
-      return {newPassword};
+      return {newPassword, token};
     } catch (err) {
       throw new SonarqubeSetupError('Error setting up SonarQube', result, err)
     } finally {
@@ -70,8 +72,49 @@ export class SonarqubeSetupImpl implements SetupSonarqube {
     return page;
   }
 
+  private async generateToken(page: Page, url: string): Promise<{token: string}> {
+    const adminUrl = `${url}/account/security/`;
+
+    this.logger.log(`Generating token: ${adminUrl}`);
+
+    try {
+      await page.goto(adminUrl);
+    } catch (err) {
+      await timer(2000);
+
+      await page.goto(adminUrl);
+    }
+
+    await timer(2000);
+
+    await this.logger.snapshot(page, 'generate-token-before');
+
+    const tokenName = `cntk-${new Date().getTime().toString(16)}`
+
+    await page.focus('#generate-token-form input');
+    await page.keyboard.type(tokenName);
+
+    await this.logger.snapshot(page, 'generate-token-mid');
+
+    await page.click('#generate-token-form button');
+
+    await timer(500);
+
+    await this.logger.snapshot(page, 'generate-token-after');
+
+    const handle: JSHandle = await page.evaluateHandle(() => {
+      return document.querySelector<HTMLElement>('code.text-success').innerText;
+    });
+
+    const token = await handle.jsonValue() as string;
+
+    this.logger.debug('Generated token: ' + maskValue(token));
+
+    return {token};
+  }
+
   private async updatePassword(page: Page, url: string, password: string): Promise<{newPassword: string}> {
-    const adminUrl = `${url}/admin/users`;
+    const adminUrl = `${url}/account/security/`;
 
     this.logger.log(`Changing password: ${adminUrl}`);
 
@@ -87,14 +130,6 @@ export class SonarqubeSetupImpl implements SetupSonarqube {
 
     await this.logger.snapshot(page, 'set-password-before');
 
-    await page.click('button.dropdown-toggle');
-
-    await timer(1000);
-
-    await page.click('a.js-user-change-password');
-
-    await timer(1000);
-
     const newPassword = generator.generate({
       length: 20,
       uppercase: true,
@@ -102,16 +137,16 @@ export class SonarqubeSetupImpl implements SetupSonarqube {
       symbols: true
     });
 
-    await page.focus('input[name=old-password]');
+    await page.focus('input[name=old_password]');
     await page.keyboard.type(password);
     await page.focus('input[name=password]');
     await page.keyboard.type(newPassword);
-    await page.focus('input[name=confirm-password]');
+    await page.focus('input[name=password_confirmation]');
     await page.keyboard.type(newPassword);
 
     await this.logger.snapshot(page, 'set-password-after');
 
-    await page.click('button[type=submit]')
+    await page.click('#change-password')
 
     return {newPassword};
   }

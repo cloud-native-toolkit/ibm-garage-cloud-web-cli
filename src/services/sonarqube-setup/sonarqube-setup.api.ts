@@ -1,6 +1,7 @@
 
 export class SonarqubeSetupResult {
   newPassword?: string;
+  token?: string;
   errorMessage?: string;
   error?: Error;
 }

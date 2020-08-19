@@ -5,11 +5,13 @@ import {SonarqubeAuth, SonarqubeAuthOptions} from './sonarqube-auth.api';
 import {SetupSonarqube, SonarqubeSetupError, SonarqubeSetupResult} from '../sonarqube-setup';
 import {LoggingApi} from '../../logging';
 import {configureKubernetesBackend} from '../../util/configure-kubernetes-backend';
+import {maskValue} from '../../util/mask-value';
 
 interface SonarqubeSecretData {
   SONARQUBE_URL?: string;
   SONARQUBE_USER: string;
   SONARQUBE_PASSWORD: string;
+  SONARQUBE_TOKEN?: string;
 }
 
 const SECRET_NAME = 'sonarqube-access';
@@ -31,7 +33,7 @@ export class SonarqubeAuthImpl implements SonarqubeAuth {
 
     const config: {url: string, username: string, password: string} = await this.getSonarqubeUrlAndCredentials(namespace, inCluster);
 
-    this.logger.log('Retrieved SonarQube config: ', Object.assign({}, config, {password: !!config.password ? 'xxxx' : ''}));
+    this.logger.log('Retrieved SonarQube config: ', Object.assign({}, config, {password: maskValue(config.password)}));
 
     const credentials: SonarqubeSetupResult = await this.sonarqube.setupSonarqube(config).catch(err => {
       this.logger.debug('Error setting up Sonarqube: ', err);
@@ -57,7 +59,7 @@ export class SonarqubeAuthImpl implements SonarqubeAuth {
       .getData<SonarqubeSecretData>(SECRET_NAME, namespace)
       .then(d => ({url: d.SONARQUBE_URL, username: d.SONARQUBE_USER, password: d.SONARQUBE_PASSWORD}));
 
-    if (result.url) {
+    if (inCluster && result.url) {
       return result;
     }
 
@@ -86,9 +88,12 @@ export class SonarqubeAuthImpl implements SonarqubeAuth {
     return Object.assign(
       {},
       data,
-      {
+      credentials.newPassword ? {
         SONARQUBE_PASSWORD: Buffer.from(credentials.newPassword).toString('base64'),
-      },
+      } : {},
+      credentials.token ? {
+        SONARQUBE_TOKEN: Buffer.from(credentials.token).toString('base64'),
+      } : {},
     );
   }
 }
