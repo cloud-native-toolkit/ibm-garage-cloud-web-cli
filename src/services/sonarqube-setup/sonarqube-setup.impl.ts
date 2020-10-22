@@ -33,6 +33,7 @@ export class SonarqubeSetupImpl implements SetupSonarqube {
 
   async buildDriver() {
     return launch({
+      ignoreHTTPSErrors: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
       defaultViewport: {
         width: 1024,
