@@ -57,7 +57,7 @@
     "typescript": "^3.9.7"
   },
   "dependencies": {
-    "@ibmgaragecloud/cloud-native-toolkit-cli": "beta",
+    "@ibmgaragecloud/cloud-native-toolkit-cli": "1.0.0",
     "@types/jest": "^26.0.7",
     "chalk": "^4.1.0",
     "dockerode": "^3.2.1",
@@ -75,7 +75,7 @@
     "puppeteer": "^5.2.1",
     "rimraf": "^3.0.2",
     "superagent": "^5.3.1",
-    "tar": "^6.0.2",
+    "tar": "^6.1.4",
     "tslib": "^2.0.0",
     "typescript-ioc": "^3.2.2",
     "yargs": "^15.4.1"
