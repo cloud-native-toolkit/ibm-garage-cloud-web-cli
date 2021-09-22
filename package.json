@@ -60,7 +60,7 @@
     "@ibmgaragecloud/cloud-native-toolkit-cli": "beta",
     "@types/jest": "^26.0.7",
     "chalk": "^4.1.0",
-    "dockerode": "^3.2.1",
+    "dockerode": "^3.3.0",
     "dot-properties": "^1.0.1",
     "fs-extra": "^9.0.1",
     "generate-password": "^1.5.1",
