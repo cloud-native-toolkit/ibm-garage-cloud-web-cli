@@ -22,11 +22,12 @@
     "prelink": "npm run build",
     "link": "npm link $npm_package_name",
     "unlink": "npm unlink $npm_package_name",
-    "prepare": "npm run build",
+    "prepare": "npm run snyk-protect && npm run build",
     "prestart": "npm run build",
     "start": "./dist/script.js",
     "igc": "./dist/script.js",
-    "release": "release-it --verbose"
+    "release": "release-it --verbose",
+    "snyk-protect": "snyk-protect"
   },
   "devDependencies": {
     "@babel/core": "^7.10.5",
@@ -68,7 +69,7 @@
     "json2yaml": "^1.1.0",
     "jsonpath": "^1.0.2",
     "kubernetes-client": "^9.0.0",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.20",
     "open": "^7.1.0",
     "openshift-rest-client": "^4.1.1",
     "ora": "^4.0.5",
@@ -78,7 +79,8 @@
     "tar": "^6.0.2",
     "tslib": "^2.0.0",
     "typescript-ioc": "^3.2.2",
-    "yargs": "^15.4.1"
+    "yargs": "^15.4.1",
+    "@snyk/protect": "latest"
   },
   "engines": {
     "node": ">= 12.0.0"
@@ -89,5 +91,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "snyk": true
 }
