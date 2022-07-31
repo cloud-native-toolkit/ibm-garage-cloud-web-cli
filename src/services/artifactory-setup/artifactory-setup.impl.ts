@@ -111,7 +111,10 @@ export class SetupArtifactoryImpl {
     this.loggingApi.log(`Getting started`);
 
     await this.loggingApi.snapshot(page, 'getting-started-before');
-    await page.click('button.get-started');
+    //await page.click('button.get-started');
+    //await page.click('button.Get Started');
+    await page.click('button.el-button--primary');
+    
 
     await timer(1000);
 
@@ -126,7 +129,7 @@ export class SetupArtifactoryImpl {
       return document.querySelector<HTMLElement>('.step-wrapper .title').innerText;
     });
 
-    this.loggingApi.log('On page: ' + await handle.jsonValue());
+    this.loggingApi.log('On page: ' + await handle.jsonValue()); 
 
     this.loggingApi.log(`Resetting admin password`);
 
@@ -134,7 +137,8 @@ export class SetupArtifactoryImpl {
       length: 20,
       uppercase: true,
       lowercase: true,
-      symbols: true
+      symbols: true,
+      numbers: true
     });
 
     await this.loggingApi.snapshot(page, 'reset-password-before');
@@ -167,11 +171,13 @@ export class SetupArtifactoryImpl {
 
     await this.loggingApi.snapshot(page, 'set-base-url-before');
 
-    await page.focus('.base-url-wrapper input');
+    //await page.focus('.base-url-wrapper input');
+    await page.focus('.el-input__inner input');
     await page.keyboard.type(url);
 
     await this.loggingApi.snapshot(page, 'set-base-url-mid');
     await page.click('.el-footer button.el-button--primary');
+    //await page.click('footer button.Next');
 
     await timer(1000);
 
@@ -193,7 +199,8 @@ export class SetupArtifactoryImpl {
     await this.loggingApi.snapshot(page, 'configure-proxy-before');
     await page.evaluateHandle(() => {
       const skipButtonIndex  = 1;
-      document.querySelectorAll<HTMLInputElement>('button.el-button--secondary')
+      //document.querySelectorAll<HTMLInputElement>('button.el-button--secondary')
+      document.querySelectorAll<HTMLInputElement>('button.el-button--transparent')
         .item(skipButtonIndex)
         .click();
     });
@@ -215,7 +222,8 @@ export class SetupArtifactoryImpl {
 
     await this.loggingApi.snapshot(page, 'create-repositories-before');
     await page.evaluateHandle(() => {
-      document.querySelectorAll<HTMLInputElement>('input[type=checkbox]')
+      //document.querySelectorAll<HTMLInputElement>('input[type=checkbox]')
+      document.querySelectorAll<HTMLInputElement>('.span.icon-image iconrepo iconrepo-generic')
         .forEach(e => e.click());
     });
 
