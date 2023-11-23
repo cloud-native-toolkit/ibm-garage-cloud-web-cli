@@ -58,7 +58,7 @@
   },
   "dependencies": {
     "@ibmgaragecloud/cloud-native-toolkit-cli": "beta",
-    "@types/jest": "^26.0.7",
+    "@types/jest": "^26.0.24",
     "chalk": "^4.1.0",
     "dockerode": "^3.2.1",
     "dot-properties": "^1.0.1",
